@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% load static %}}
+  <link href={% static 'core/css/covid.css' %} rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COVID-19</title>
+  {% bootstrap_javascript %}
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/series-label.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+
+
+<body class="bg-dark text-center">
+  <h1 class="text-center text-white mt-5">ESTADISTICAS <span class="text-danger">COVID-19</span></h1>
+
+  <form method="post" action="" class="d-flex justify-content-center align-items-center mt-5">
+    {% csrf_token %}
+    <select class="form-control" name="selectedcountry" style="width: 200px;">
+      {% for country in countries %}
+      <option>{{ country }}</option>
+      {% endfor %}
+    </select>
+    <input class="btn btn-outline-danger ms-3" type="submit">
+  </form>
+
+  <br>
+
+  <div class="container" id="card">
+    <h1 class="text-white">{{ sel_country }}</h1>
+    <div class="row text-white d-flex justify-content-center align-items-center">
+      <div class="col-md-3 bg-info mx-3 my-3" id="card">
+        <h1> {{ new }} </h1>
+        <p>Nuevos casos</p>
+      </div>
+      <div class="col-md-3 bg-light mx-3 my-3 text-dark" id="card">
+        <h1> {{ active }} </h1>
+        <p>Casos activos</p>
+      </div>
+      <div class="col-md-3 bg-warning mx-3 my-3" id="card">
+        <h1> {{ critical }} </h1>
+        <p>Casos criticos</p>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row d-flex justify-content-center align-items-center" id="card>">
+        <div class="col-lg-10">
+          <figure class="highcharts-figure">
+            <div id="container"></div>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="row text-white d-flex justify-content-center align-items-center">
+      <div class="col-md-3 bg-success mx-3 my-3" id="card">
+        <h1> {{ recovered }} </h1>
+        <p>Casos recuperados</p>
+      </div>
+      <div class="col-md-3 bg-danger mx-3 my-3" id="card">
+        <h1> {{ deaths }} </h1>
+        <p>Bajas</p>
+      </div>
+      <div class="col-md-3 bg-primary mx-3 my-3" id="card">
+        <h1> {{ total }} </h1>
+        <p>Total</p>
+      </div>
+    </div>
+
+
+  </div>
+
+  </div>
+
+  <script type="application/javascript">
+
+    Highcharts.chart('container', {
+      chart: {
+        type: 'spline',
+        scrollablePlotArea: {
+          minWidth: 400,
+          scrollPositionX: 1
+        }
+      },
+      title: {
+        text: '{{ sel_country }}',
+        align: 'center'
+      },
+      subtitle: {
+        text: 'Datos correspondientes a los últimos siete diaz',
+        align: 'center'
+      },
+      xAxis: {
+        type: 'datetime',
+        labels: {
+          overflow: 'justify'
+        }
+      },
+      yAxis: {
+        title: {
+          text: 'Personas'
+        },
+        minorGridLineWidth: 0,
+        gridLineWidth: 0,
+        alternateGridColor: null
+      },
+      tooltip: {
+        valueSuffix: ' personas'
+      },
+      plotOptions: {
+        spline: {
+          lineWidth: 4,
+          states: {
+            hover: {
+              lineWidth: 5
+            }
+          },
+          marker: {
+            enabled: false
+          },
+          pointInterval: 86400000, // one year in milliseconds
+          pointStart: Date.UTC({{yearUTC}},{{monthUTC}},{{dayUTC}})
+        }
+      },
+      series: [{
+        name: 'Casos reportados',
+        data: {{week_cases}}
+      }, {
+        name: 'Muertes reportadas',
+        data: {{week_deaths}}
+      }],
+      navigation: {
+        menuItemStyle: {
+          fontSize: '10px'
+        }
+      }
+    });
+  </script>
+
+  <footer class="d-flex justify-content-center align-items-center text-white mt-5">
+    <p>Developed by</p>
+    <p class="text-secondary mx-2">Nelson Figueroa</p>
+    <p class="fw-lighter">2021</p>
+  </footer>
+  <script>
+    $(document).ready(function () {
+      $("div#card").fadeIn(2000);
+    })
+
+  </script>
+</body>
+
+</html>
